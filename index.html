@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MarketPulse — Financial Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #0d0f0e;
+    --paper: #f5f2eb;
+    --cream: #ede9df;
+    --accent: #c84b2f;
+    --accent2: #2a6b45;
+    --gold: #c9a84c;
+    --muted: #7a7568;
+    --border: #d5d0c4;
+    --card-bg: #faf8f4;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 7px 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 100;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 0;
+    animation: tickerScroll 30s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 0 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  .ticker-item .sym { font-weight: 500; letter-spacing: 0.05em; color: #e8e3d8; }
+  .ticker-item .price { color: #c4bfb3; }
+  .up { color: #5fc48a !important; }
+  .down { color: #e06b5a !important; }
+  @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding: 0 5vw;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    z-index: 90;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  .logo sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    vertical-align: middle;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }
+  nav { display: flex; gap: 32px; align-items: center; }
+  nav a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 0; height: 2px;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  nav a:hover::after { width: 100%; }
+  .nav-cta {
+    background: var(--ink);
+    color: var(--paper) !important;
+    padding: 8px 18px !important;
+    border-radius: 2px;
+    font-size: 12px !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--accent) !important; }
+  .nav-cta::after { display: none !important; }
+  .date-line {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 60px 5vw 50px;
+    display: grid;
+    grid-template-columns: 1fr 1px 380px;
+    gap: 0;
+    border-bottom: 2px solid var(--ink);
+  }
+  .hero-divider { background: var(--ink); }
+  .hero-main { padding-right: 48px; }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 10px;
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4.5vw, 58px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-excerpt {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 28px;
+    max-width: 520px;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .hero-meta .author { color: var(--ink); font-weight: 500; }
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+    transition: color 0.2s, gap 0.2s;
+  }
+  .read-more:hover { color: var(--accent); gap: 14px; }
+  .hero-sidebar { padding-left: 36px; display: flex; flex-direction: column; gap: 24px; }
+  .sidebar-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mini-card { cursor: pointer; }
+  .mini-card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 5px;
+  }
+  .mini-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 4px;
+    transition: color 0.2s;
+  }
+  .mini-card:hover h4 { color: var(--accent); }
+  .mini-card p { font-size: 12px; color: var(--muted); }
+  .mini-sep { height: 1px; background: var(--border); }
+
+  /* ── SECTION LAYOUT ── */
+  .section-wrap { padding: 56px 5vw; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px;
+  }
+  .section-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .section-label span { color: var(--accent); }
+  .see-all {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .see-all:hover { color: var(--accent); }
+
+  /* ── CARDS ── */
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 24px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.25s ease;
+  }
+  .card:hover::before { height: 100%; }
+  .card:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 var(--border); }
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: inline-block;
+    padding: 2px 8px;
+  }
+  .tag-news { background: #fff0ec; color: var(--accent); }
+  .tag-analysis { background: #eaf5ef; color: var(--accent2); }
+  .tag-portfolio { background: #fdf6e3; color: #8b6914; }
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .card p { font-size: 13.5px; color: var(--muted); line-height: 1.65; margin-bottom: 18px; }
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .card-footer .mins { color: var(--ink); font-weight: 500; }
+
+  /* ── MARKET SNAPSHOT ── */
+  .snapshot-bg {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 56px 5vw;
+  }
+  .snapshot-bg .section-header { border-bottom-color: rgba(255,255,255,0.2); }
+  .snapshot-bg .section-label { color: var(--paper); }
+  .snapshot-bg .see-all { color: rgba(255,255,255,0.4); }
+  .snapshot-bg .see-all:hover { color: var(--gold); }
+  .indices-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 36px; }
+  .index-box {
+    padding: 24px 20px;
+    background: var(--ink);
+    transition: background 0.2s;
+  }
+  .index-box:hover { background: #1a1c1b; }
+  .index-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .index-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .index-chg {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .chg-up { color: #5fc48a; }
+  .chg-down { color: #e06b5a; }
+
+  .movers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .movers-box { }
+  .movers-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .mover-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+  .mover-name { color: rgba(255,255,255,0.85); }
+  .mover-price { color: rgba(255,255,255,0.5); font-size: 12px; }
+
+  /* ── PORTFOLIO TIPS ── */
+  .tips-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+  .tip-featured {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tip-featured::after {
+    content: '₹';
+    position: absolute;
+    right: -20px; bottom: -30px;
+    font-family: 'Playfair Display', serif;
+    font-size: 180px;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .tip-featured .card-tag { background: rgba(201,168,76,0.2); color: var(--gold); }
+  .tip-featured h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 14px;
+    color: var(--paper);
+  }
+  .tip-featured p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; margin-bottom: 24px; }
+  .tip-featured .read-more { color: var(--gold); border-bottom-color: var(--gold); }
+  .tip-featured .read-more:hover { color: #fff; }
+  .tip-stack { display: flex; flex-direction: column; gap: 0; }
+  .tip-mini {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .tip-mini:first-child { padding-top: 0; }
+  .tip-mini .card-tag { margin-bottom: 8px; }
+  .tip-mini h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 4px;
+    transition: color 0.2s;
+  }
+  .tip-mini:hover h4 { color: var(--accent); }
+  .tip-mini p { font-size: 12px; color: var(--muted); }
+
+  /* ── NEWSLETTER ── */
+  .newsletter {
+    background: var(--cream);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 64px 5vw;
+    text-align: center;
+  }
+  .nl-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .nl-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 3vw, 42px);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .nl-sub { font-size: 15px; color: var(--muted); margin-bottom: 32px; }
+  .nl-form { display: flex; gap: 0; max-width: 440px; margin: 0 auto; }
+  .nl-form input {
+    flex: 1;
+    padding: 13px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    border: 1.5px solid var(--ink);
+    border-right: none;
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+  }
+  .nl-form input::placeholder { color: var(--muted); }
+  .nl-form button {
+    padding: 13px 24px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nl-form button:hover { background: var(--accent); border-color: var(--accent); }
+  .nl-note { font-size: 11px; color: var(--muted); margin-top: 12px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.5);
+    padding: 48px 5vw 28px;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .footer-brand .logo { color: var(--paper); display: block; margin-bottom: 14px; }
+  .footer-brand p { font-size: 13px; line-height: 1.65; }
+  .footer-col h5 {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 16px;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    margin-bottom: 9px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+  .footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; margin-left: 20px; }
+  .footer-bottom a:hover { color: var(--gold); }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-divider { display: none; }
+    .hero-sidebar { padding-left: 0; border-top: 2px solid var(--ink); padding-top: 36px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .indices-grid { grid-template-columns: 1fr 1fr; }
+    .movers-grid { grid-template-columns: 1fr; }
+    .tips-grid { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">Market<span>Pulse</span><sub>&#9632; Financial Intelligence</sub></a>
+    <nav>
+      <a href="#news">Market News</a>
+      <a href="#analysis">Stock Analysis</a>
+      <a href="#portfolio">Portfolio Tips</a>
+      <a href="#" class="nav-cta">Subscribe</a>
+    </nav>
+  </div>
+  <div class="date-line" id="dateBar"></div>
+</header>
+
+<!-- HERO -->
+<section class="hero fade-up">
+  <div class="hero-main">
+    <div class="hero-tag">&#9670; Featured Analysis</div>
+    <h1 class="hero-title">India's <em>Maize Supercycle</em> — Why Smart Money Is Positioning Now</h1>
+    <p class="hero-excerpt">Ethanol mandates, rising animal feed demand, and a thinly-covered sector are creating a once-in-a-decade setup. We break down the data and map the biggest opportunities across the agri-value chain.</p>
+    <div style="margin-bottom: 24px;">
+      <a href="#" class="read-more">Read Full Analysis →</a>
+    </div>
+    <div class="hero-meta">
+      <span class="author">Arjun Mehta</span>
+      <span>&#183;</span>
+      <span>April 5, 2026</span>
+      <span>&#183;</span>
+      <span>12 min read</span>
+    </div>
+  </div>
+  <div class="hero-divider"></div>
+  <div class="hero-sidebar">
+    <div class="sidebar-title">&#9656; Also trending</div>
+    <div class="mini-card">
+      <div class="mini-card-tag">Market News</div>
+      <h4>RBI Holds Rates; Markets Rally 1.4% on Dovish Tone</h4>
+      <p>Apr 4 &nbsp;&#183;&nbsp; 4 min read</p>
+    </div>
+    <div class="mini-sep"></div>
+    <div class="mini-card">
+      <div class="mini-card-tag">Stock Analysis</div>
+      <h4>Titan Company: Premium Stays Premium Even at These Valuations</h4>
+      <p>Apr 3 &nbsp;&#183;&nbsp; 7 min read</p>
+    </div>
+    <div class="mini-sep"></div>
+    <div class="mini-card">
+      <div class="mini-card-tag">Portfolio Tips</div>
+      <h4>The 60/20/20 Rule for Volatile Markets: A Practical Guide</h4>
+      <p>Apr 2 &nbsp;&#183;&nbsp; 5 min read</p>
+    </div>
+    <div class="mini-sep"></div>
+    <div class="mini-card">
+      <div class="mini-card-tag">Market News</div>
+      <h4>Q4 Earnings Season Kicks Off — What Analysts Expect</h4>
+      <p>Apr 1 &nbsp;&#183;&nbsp; 3 min read</p>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET SNAPSHOT -->
+<section class="snapshot-bg" id="news">
+  <div class="section-header">
+    <div class="section-label" style="color: #f5f2eb;">Market <span style="color: var(--gold);">Snapshot</span></div>
+    <a href="#" class="see-all">Live Data ↗</a>
+  </div>
+  <div class="indices-grid">
+    <div class="index-box">
+      <div class="index-name">Nifty 50</div>
+      <div class="index-val">22,514.65</div>
+      <div class="index-chg chg-up">▲ 184.35 (+0.82%)</div>
+    </div>
+    <div class="index-box">
+      <div class="index-name">Sensex</div>
+      <div class="index-val">74,227.08</div>
+      <div class="index-chg chg-up">▲ 612.21 (+0.83%)</div>
+    </div>
+    <div class="index-box">
+      <div class="index-name">Nifty Bank</div>
+      <div class="index-val">48,102.40</div>
+      <div class="index-chg chg-down">▼ 243.10 (−0.50%)</div>
+    </div>
+    <div class="index-box">
+      <div class="index-name">Nifty IT</div>
+      <div class="index-val">38,845.75</div>
+      <div class="index-chg chg-up">▲ 320.90 (+0.83%)</div>
+    </div>
+  </div>
+  <div class="movers-grid">
+    <div class="movers-box">
+      <div class="movers-title">&#9650; Top Gainers</div>
+      <div class="mover-row"><span class="mover-name">TATAMOTORS</span><span class="mover-price">₹942.50</span><span class="chg-up">+4.82%</span></div>
+      <div class="mover-row"><span class="mover-name">ADANIPORTS</span><span class="mover-price">₹1,284.00</span><span class="chg-up">+3.61%</span></div>
+      <div class="mover-row"><span class="mover-name">WIPRO</span><span class="mover-price">₹472.80</span><span class="chg-up">+2.94%</span></div>
+      <div class="mover-row"><span class="mover-name">MARUTI</span><span class="mover-price">₹12,340.00</span><span class="chg-up">+2.17%</span></div>
+    </div>
+    <div class="movers-box">
+      <div class="movers-title">&#9660; Top Losers</div>
+      <div class="mover-row"><span class="mover-name">INDUSINDBK</span><span class="mover-price">₹1,024.35</span><span class="chg-down">−3.45%</span></div>
+      <div class="mover-row"><span class="mover-name">BAJFINANCE</span><span class="mover-price">₹6,847.00</span><span class="chg-down">−2.10%</span></div>
+      <div class="mover-row"><span class="mover-name">HDFCBANK</span><span class="mover-price">₹1,648.75</span><span class="chg-down">−1.38%</span></div>
+      <div class="mover-row"><span class="mover-name">COALINDIA</span><span class="mover-price">₹387.40</span><span class="chg-down">−0.92%</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET NEWS ARTICLES -->
+<section class="section-wrap fade-up">
+  <div class="section-header">
+    <div class="section-label">Market <span>News</span></div>
+    <a href="#" class="see-all">All News →</a>
+  </div>
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-tag tag-news">Market News</span>
+      <h3>FII Buying Surges as Rupee Stabilises Above 83 — Bulls Take Control</h3>
+      <p>Foreign institutional investors pumped over ₹4,200 crore into Indian equities last week as the rupee held firm, reigniting optimism in large-cap financials and IT names.</p>
+      <div class="card-footer">
+        <span>Apr 4, 2026</span>
+        <span class="mins">5 min read</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-news">Market News</span>
+      <h3>Budget 2026 Impact: The Infrastructure Plays Nobody Is Talking About Yet</h3>
+      <p>Beyond the headline capex numbers, a clutch of mid-cap infrastructure names are quietly picking up order books that the market has largely ignored. Here's what the numbers say.</p>
+      <div class="card-footer">
+        <span>Apr 3, 2026</span>
+        <span class="mins">8 min read</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-news">Market News</span>
+      <h3>US Tariff Shock: How Indian Exporters Are Recalibrating Their Global Strategy</h3>
+      <p>The latest round of US trade measures is forcing Indian pharma, textile, and auto-component companies to rethink their exposure — and some are turning headwinds into opportunity.</p>
+      <div class="card-footer">
+        <span>Apr 2, 2026</span>
+        <span class="mins">6 min read</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STOCK ANALYSIS -->
+<section class="section-wrap fade-up" id="analysis" style="background: var(--cream); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-header">
+    <div class="section-label">Stock <span>Analysis</span></div>
+    <a href="#" class="see-all">All Analysis →</a>
+  </div>
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-tag tag-analysis">Deep Dive</span>
+      <h3>Reliance Industries: Is the Jio Financial Spin-Off Finally Priced In?</h3>
+      <p>Two years on from the demerger, Jio Financial Services has carved out its own identity. We revisit whether the parent still deserves a conglomerate discount — or premium.</p>
+      <div class="card-footer">
+        <span>Apr 4, 2026</span>
+        <span class="mins">10 min read</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-analysis">Value Pick</span>
+      <h3>NTPC Green Energy — The Utility Giant's Renewable Pivot May Be Its Best Bet Yet</h3>
+      <p>As India races toward 500GW renewable capacity by 2030, NTPC's green energy arm has quietly built one of the largest order pipelines in the sector. Valuation still looks compelling.</p>
+      <div class="card-footer">
+        <span>Apr 3, 2026</span>
+        <span class="mins">9 min read</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-analysis">Earnings Watch</span>
+      <h3>TCS Q4 Preview: Street Eyes 5–7% Revenue Growth; Margins the Real Test</h3>
+      <p>With attrition finally stabilising and deal wins recovering, TCS heads into its March quarter results with cautious optimism. Here's what we're watching in the numbers.</p>
+      <div class="card-footer">
+        <span>Apr 1, 2026</span>
+        <span class="mins">7 min read</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO TIPS -->
+<section class="section-wrap fade-up" id="portfolio">
+  <div class="section-header">
+    <div class="section-label">Portfolio <span>Tips</span></div>
+    <a href="#" class="see-all">All Tips →</a>
+  </div>
+  <div class="tips-grid">
+    <div class="tip-featured">
+      <span class="card-tag" style="background:rgba(201,168,76,0.2);color:var(--gold);display:inline-block;padding:2px 8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;">&#9733; Editor's Pick</span>
+      <h3>How to Build a ₹10 Lakh Portfolio From Scratch — A Step-by-Step Blueprint</h3>
+      <p>From picking the right asset allocation to selecting your first five stocks, this comprehensive guide walks you through every decision a first-time equity investor needs to make — with real numbers, not theory.</p>
+      <a href="#" class="read-more" style="color: var(--gold); border-bottom-color: var(--gold);">Read the Full Guide →</a>
+    </div>
+    <div class="tip-stack">
+      <div class="tip-mini">
+        <span class="card-tag tag-portfolio" style="display:inline-block;padding:2px 8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">Risk Management</span>
+        <h4>Stop-Loss vs Trailing Stop: Which Works Better in Indian Markets?</h4>
+        <p>Apr 3 &nbsp;&#183;&nbsp; 5 min</p>
+      </div>
+      <div class="tip-mini">
+        <span class="card-tag tag-portfolio" style="display:inline-block;padding:2px 8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">SIP Strategy</span>
+        <h4>Why Timing the Market Is Killing Your SIP Returns (And What to Do Instead)</h4>
+        <p>Apr 2 &nbsp;&#183;&nbsp; 4 min</p>
+      </div>
+      <div class="tip-mini">
+        <span class="card-tag tag-portfolio" style="display:inline-block;padding:2px 8px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">Tax Planning</span>
+        <h4>LTCG vs STCG in FY26 — A Plain-English Tax Guide for Stock Investors</h4>
+        <p>Apr 1 &nbsp;&#183;&nbsp; 6 min</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter fade-up">
+  <div class="nl-label">&#9679; Daily Intelligence</div>
+  <h2 class="nl-title">Markets Move Fast.<br>Stay Ahead of Them.</h2>
+  <p class="nl-sub">Join 40,000+ investors who get MarketPulse's morning brief — market news, one stock idea, and a portfolio tip. Free, every trading day.</p>
+  <div class="nl-form">
+    <input type="email" placeholder="Your email address"/>
+    <button type="button">Subscribe</button>
+  </div>
+  <p class="nl-note">No spam. Unsubscribe anytime. Your data stays with us.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="logo" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#f5f2eb;text-decoration:none;">Market<span style="color:#c84b2f;">Pulse</span></a>
+      <p>Independent financial intelligence for the modern Indian investor. Covering equities, macro, and everything in between.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Sections</h5>
+      <a href="#">Market News</a>
+      <a href="#">Stock Analysis</a>
+      <a href="#">Portfolio Tips</a>
+      <a href="#">IPO Watch</a>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <a href="#">Glossary</a>
+      <a href="#">Learning Centre</a>
+      <a href="#">Market Calendar</a>
+      <a href="#">Stock Screener</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About</a>
+      <a href="#">Advertise</a>
+      <a href="#">Contact</a>
+      <a href="#">Disclaimer</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MarketPulse. All rights reserved.</span>
+    <div>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Disclaimer</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Date bar
+  const d = new Date();
+  document.getElementById('dateBar').textContent =
+    d.toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase() +
+    ' · NSE/BSE TRADING HOURS: 9:15 AM – 3:30 PM IST';
+
+  // Ticker data
+  const stocks = [
+    {sym:'RELIANCE', price:'2,941.50', chg:'+0.62%', up:true},
+    {sym:'TCS', price:'4,218.30', chg:'-0.31%', up:false},
+    {sym:'INFY', price:'1,824.75', chg:'+1.14%', up:true},
+    {sym:'HDFCBANK', price:'1,648.75', chg:'-1.38%', up:false},
+    {sym:'ICICIBANK', price:'1,312.40', chg:'+0.77%', up:true},
+    {sym:'BHARTIARTL', price:'1,885.60', chg:'+2.08%', up:true},
+    {sym:'WIPRO', price:'472.80', chg:'+2.94%', up:true},
+    {sym:'AXISBANK', price:'1,198.25', chg:'+0.45%', up:true},
+    {sym:'ITC', price:'498.30', chg:'-0.18%', up:false},
+    {sym:'MARUTI', price:'12,340.00', chg:'+2.17%', up:true},
+    {sym:'TATAMOTORS', price:'942.50', chg:'+4.82%', up:true},
+    {sym:'SUNPHARMA', price:'1,762.90', chg:'+0.92%', up:true},
+    {sym:'GOLD', price:'₹89,240', chg:'+0.34%', up:true},
+    {sym:'SENSEX', price:'74,227', chg:'+0.83%', up:true},
+    {sym:'NIFTY50', price:'22,514', chg:'+0.82%', up:true},
+  ];
+  const doubled = [...stocks, ...stocks];
+  const track = document.getElementById('ticker');
+  track.innerHTML = doubled.map(s => `
+    <span class="ticker-item">
+      <span class="sym">${s.sym}</span>
+      <span class="price">${s.price}</span>
+      <span class="${s.up ? 'up' : 'down'}">${s.chg}</span>
+    </span>`).join('');
+
+  // Scroll animations
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
